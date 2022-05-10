@@ -1,5 +1,19 @@
-function post () {
-  const submit = document.setElementById("submit");
+const buildHTML = (XHR) => {
+  const item = XHR.response.post;
+  const html = `
+    <div class="post">
+      <div class="date">
+        投稿日時：${item.created_at}
+      </div>
+      <dic class="content">
+        ${item.content}
+      </dic>
+    </div>`;
+  return html;
+};
+
+function post (){
+  const submit = document.getElementById("submit");
   submit.addEventListener('click', (e) => {
     e.preventDefault();
     const form = document.getElementById("form");
@@ -8,6 +22,15 @@ function post () {
     XHR.open("POST","/posts", true);
     XHR.responseType = "json";
     XHR.send(formData);
+    XHR.onload = () => {
+      if (XHR.status != 200) {
+        alert(`Error ${XHR.status}: ${XHR.statusText}`);
+      }
+      const list = document.getElementById("list");
+      const formText = document.getElementById("content");
+      list.insertAdjacentHTML("afterend", buildHTML(XHR));
+      formText.value = "";
+    };
   });
 };
 
